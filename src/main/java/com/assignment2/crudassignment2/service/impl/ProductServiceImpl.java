@@ -3,6 +3,8 @@ package com.assignment2.crudassignment2.service.impl;
 import com.assignment2.crudassignment2.exception.NotFoundException;
 import com.assignment2.crudassignment2.model.Product;
 import com.assignment2.crudassignment2.model.dto.ProductDto;
+import com.assignment2.crudassignment2.model.request.AddProductRequest;
+import com.assignment2.crudassignment2.model.request.UpdateProductRequest;
 import com.assignment2.crudassignment2.repository.ProductRepository;
 import com.assignment2.crudassignment2.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +40,10 @@ public class ProductServiceImpl implements ProductService {
         return randomCode;
     }
 
-    public ProductDto saveProduct(ProductDto productDto) {
+    public ProductDto saveProduct(AddProductRequest addProductRequest) {
         Product product = new Product();
-        product.setPrice(productDto.getPrice());
-        product.setName(productDto.getName());
+        product.setPrice(addProductRequest.getPrice());
+        product.setName(addProductRequest.getName());
         product.setCode(createRandomCode());
         productRepository.save(product);
 
@@ -77,13 +79,14 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteByCode(code);
     }
 
-    public ProductDto updateProduct(ProductDto productDto, Double price) throws NotFoundException {
-        Optional<Product> optionalProduct = Optional.ofNullable(productRepository.findByCode(productDto.getCode()));
+    public ProductDto updateProduct(UpdateProductRequest updateProductRequest, int code) throws NotFoundException {
+        Optional<Product> optionalProduct = Optional.ofNullable(productRepository.findByCode(code));
         if (!optionalProduct.isPresent()) {
             throw new NotFoundException(message);
         }
         Product updatedProduct = optionalProduct.get();
-        updatedProduct.setPrice(price);
+        updatedProduct.setPrice(updateProductRequest.getPrice());
+        updatedProduct.setName(updateProductRequest.getName());
         productRepository.save(updatedProduct);
 
         return productDtoConverter(updatedProduct);

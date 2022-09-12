@@ -5,6 +5,8 @@ import com.assignment2.crudassignment2.model.Consumer;
 import com.assignment2.crudassignment2.model.Product;
 import com.assignment2.crudassignment2.model.Sale;
 import com.assignment2.crudassignment2.model.dto.SaleDto;
+import com.assignment2.crudassignment2.model.request.AddSaleRequest;
+import com.assignment2.crudassignment2.model.request.UpdateSaleRequest;
 import com.assignment2.crudassignment2.repository.ConsumerRepository;
 import com.assignment2.crudassignment2.repository.ProductRepository;
 import com.assignment2.crudassignment2.repository.SaleRepository;
@@ -27,14 +29,14 @@ public class SaleServiceImpl implements SaleService {
 
     private final String message ="The object you were looking for was not found.";
 
-    public SaleDto saveSale(SaleDto saleDto, List<Integer> productCodes, String email) throws Exception {
+    public SaleDto saveSale(AddSaleRequest addSaleRequest) throws Exception {
 
-        Optional<List<Product>> productListOptional = Optional.ofNullable(productRepository.findByCodeIn(productCodes));
+        Optional<List<Product>> productListOptional = Optional.ofNullable(productRepository.findByCodeIn(addSaleRequest.getProductCodeList()));
 
         if (!productListOptional.isPresent()) {
             throw new Exception(message);
         }
-        Consumer consumer = consumerRepository.findByEmail(email);
+        Consumer consumer = consumerRepository.findByEmail(addSaleRequest.getEmail());
 
         if (consumer == null) {
             throw new Exception(message);
@@ -46,7 +48,7 @@ public class SaleServiceImpl implements SaleService {
         double totalCost = 0;
         for (Product productList : product) {
             sale.getProducts().add(productList);
-            totalCost += productList.getPrice();
+            totalCost = totalCost + productList.getPrice();
         }
         Random random = new Random();
         int randomCode = random.nextInt(90000) + 10000;
@@ -63,19 +65,19 @@ public class SaleServiceImpl implements SaleService {
         return saleDtoConverter(sale);
     }
 
-    public SaleDto updateSale(SaleDto saleDto, Integer newProductCode, Integer oldProductCode) throws Exception {
-        Optional<Sale> sale = Optional.ofNullable(saleRepository.findByCode(saleDto.getCode()));
+    public SaleDto updateSale(UpdateSaleRequest updateSaleRequest, Integer saleCode) throws Exception {
+        Optional<Sale> sale = Optional.ofNullable(saleRepository.findByCode(saleCode));
         if (!sale.isPresent()) {
             throw new Exception(message);
         }
 
-        Optional<Product> oldProduct = Optional.ofNullable(productRepository.findByCode(oldProductCode));
+        Optional<Product> oldProduct = Optional.ofNullable(productRepository.findByCode(updateSaleRequest.getOldProductCode()));
 
         if (!oldProduct.isPresent()) {
             throw new Exception(message);
         }
 
-        Optional<Product> newProduct = Optional.ofNullable(productRepository.findByCode(newProductCode));
+        Optional<Product> newProduct = Optional.ofNullable(productRepository.findByCode(updateSaleRequest.getNewProductCode()));
         if (!newProduct.isPresent()) {
             throw new Exception(message);
         }

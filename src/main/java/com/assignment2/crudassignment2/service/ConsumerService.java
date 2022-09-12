@@ -1,14 +1,14 @@
 package com.assignment2.crudassignment2.service;
 
-import com.assignment2.crudassignment2.model.Consumer;
 import com.assignment2.crudassignment2.model.dto.ConsumerDto;
+import com.assignment2.crudassignment2.model.request.ConsumerRequest;
 
 import java.util.List;
 
 public interface ConsumerService {
-    ConsumerDto saveConsumer(ConsumerDto consumerDto);
+    ConsumerDto saveConsumer(ConsumerRequest consumerRequest);
 
-    ConsumerDto updateConsumer(ConsumerDto consumerDto,String newEmail) throws Exception;
+    ConsumerDto updateConsumer(ConsumerRequest consumerRequest,String newEmail) throws Exception;
 
     String deleteConsumerByEmail(String email);
 
