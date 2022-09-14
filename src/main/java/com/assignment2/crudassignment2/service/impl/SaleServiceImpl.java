@@ -1,9 +1,9 @@
 package com.assignment2.crudassignment2.service.impl;
 
 import com.assignment2.crudassignment2.exception.NotFoundException;
-import com.assignment2.crudassignment2.model.Consumer;
-import com.assignment2.crudassignment2.model.Product;
-import com.assignment2.crudassignment2.model.Sale;
+import com.assignment2.crudassignment2.model.entity.Consumer;
+import com.assignment2.crudassignment2.model.entity.Product;
+import com.assignment2.crudassignment2.model.entity.Sale;
 import com.assignment2.crudassignment2.model.dto.SaleDto;
 import com.assignment2.crudassignment2.model.request.AddSaleRequest;
 import com.assignment2.crudassignment2.model.request.UpdateSaleRequest;
@@ -13,6 +13,8 @@ import com.assignment2.crudassignment2.repository.SaleRepository;
 import com.assignment2.crudassignment2.service.SaleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
 public class SaleServiceImpl implements SaleService {
 
     private final SaleRepository saleRepository;
@@ -32,34 +35,35 @@ public class SaleServiceImpl implements SaleService {
     public SaleDto saveSale(AddSaleRequest addSaleRequest) throws Exception {
 
         Optional<List<Product>> productListOptional = Optional.ofNullable(productRepository.findByCodeIn(addSaleRequest.getProductCodeList()));
-
+//TODO check products
         if (!productListOptional.isPresent()) {
             throw new Exception(message);
         }
-        Consumer consumer = consumerRepository.findByEmail(addSaleRequest.getEmail());
+        Optional<Consumer> consumerOptional = Optional.ofNullable(consumerRepository.findByEmail(addSaleRequest.getEmail()));
 
-        if (consumer == null) {
+        if (!consumerOptional.isPresent()) {
             throw new Exception(message);
         }
 
-        List<Product> product = productListOptional.get();
+        List<Product> productList = productListOptional.get();
         Sale sale = new Sale();
 
         double totalCost = 0;
-        for (Product productList : product) {
-            sale.getProducts().add(productList);
-            totalCost = totalCost + productList.getPrice();
+        for (Product product : productList) {
+            sale.getProducts().add(product);
+            totalCost = totalCost + product.getPrice();
         }
+
         Random random = new Random();
         int randomCode = random.nextInt(90000) + 10000;
 
-        while (saleRepository.findByCode(randomCode) == null) {
+        while (saleRepository.findByCode(randomCode) != null) {
             randomCode = random.nextInt(90000) + 10000;
         }
 
         sale.setCode(randomCode);
         sale.setTotalCost(totalCost);
-        sale.setConsumer(consumer);
+        sale.setConsumer(consumerOptional.get());
         saleRepository.save(sale);
 
         return saleDtoConverter(sale);

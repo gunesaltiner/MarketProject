@@ -1,10 +1,11 @@
-package com.assignment2.crudassignment2.model;
+package com.assignment2.crudassignment2.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ public class Consumer {
     private Long id;
 
     @Column(unique = true)
+    @Email
     private String email;
 
     private String name;

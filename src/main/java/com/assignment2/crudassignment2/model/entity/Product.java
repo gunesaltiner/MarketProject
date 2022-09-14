@@ -1,5 +1,6 @@
-package com.assignment2.crudassignment2.model;
+package com.assignment2.crudassignment2.model.entity;
 
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.assignment2.crudassignment2.service;
 
-import com.assignment2.crudassignment2.model.Product;
+import com.assignment2.crudassignment2.exception.NotFoundException;
 import com.assignment2.crudassignment2.model.dto.ProductDto;
 import com.assignment2.crudassignment2.model.request.AddProductRequest;
 import com.assignment2.crudassignment2.model.request.UpdateProductRequest;
@@ -11,9 +11,9 @@ public interface ProductService {
 
     ProductDto saveProduct(AddProductRequest addProductRequest);
 
-    ProductDto updateProduct(UpdateProductRequest updateProductRequest, int code) throws Exception;
+    ProductDto updateProduct(UpdateProductRequest updateProductRequest, Integer code) throws Exception;
 
-    void deleteProduct(Integer code);
+    void deleteProduct(Integer code) throws NotFoundException;
 
     ProductDto getProductByName(String name) throws Exception;
 

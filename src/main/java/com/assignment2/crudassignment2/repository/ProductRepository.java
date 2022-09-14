@@ -1,6 +1,6 @@
 package com.assignment2.crudassignment2.repository;
 
-import com.assignment2.crudassignment2.model.Product;
+import com.assignment2.crudassignment2.model.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

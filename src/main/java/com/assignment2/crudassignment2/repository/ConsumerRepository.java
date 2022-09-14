@@ -1,6 +1,6 @@
 package com.assignment2.crudassignment2.repository;
 
-import com.assignment2.crudassignment2.model.Consumer;
+import com.assignment2.crudassignment2.model.entity.Consumer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ConsumerRepository extends JpaRepository<Consumer, Long> {

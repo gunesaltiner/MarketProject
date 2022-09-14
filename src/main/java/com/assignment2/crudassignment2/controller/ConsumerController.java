@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import java.util.List;
 
 @RestController
@@ -21,7 +23,7 @@ public class ConsumerController {
 
     // POST METHODS
     @PostMapping("/consumer/save")
-    public ResponseEntity<ConsumerDto> addConsumer(@RequestBody ConsumerRequest consumerRequest) {
+    public ResponseEntity<ConsumerDto> addConsumer(@Valid @RequestBody ConsumerRequest consumerRequest) {
         return new ResponseEntity<>(consumerService.saveConsumer(consumerRequest), HttpStatus.CREATED);
     }
 
@@ -32,7 +34,7 @@ public class ConsumerController {
     }
 
     // DELETE METHODS
-    @DeleteMapping("/consumer/delete/{email}")
+    @DeleteMapping("/consumer/delete/email/{email}")
     public ResponseEntity<Void> deleteConsumerByEmail(@PathVariable String email) {
         consumerService.deleteConsumerByEmail(email);
         return new ResponseEntity(HttpStatus.OK);
@@ -45,7 +47,7 @@ public class ConsumerController {
     }
 
     // GET METHODS
-    @GetMapping("/consumer/{id}")
+    @GetMapping("/consumer/id/{id}")
     public ResponseEntity<ConsumerDto> findConsumerById(@PathVariable Long id) throws Exception {
         return new ResponseEntity<>(consumerService.getConsumerById(id), HttpStatus.FOUND);
     }

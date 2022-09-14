@@ -1,7 +1,7 @@
 package com.assignment2.crudassignment2.service.impl;
 
 import com.assignment2.crudassignment2.exception.NotFoundException;
-import com.assignment2.crudassignment2.model.Product;
+import com.assignment2.crudassignment2.model.entity.Product;
 import com.assignment2.crudassignment2.model.dto.ProductDto;
 import com.assignment2.crudassignment2.model.request.AddProductRequest;
 import com.assignment2.crudassignment2.model.request.UpdateProductRequest;
@@ -9,6 +9,8 @@ import com.assignment2.crudassignment2.repository.ProductRepository;
 import com.assignment2.crudassignment2.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
 public class ProductServiceImpl implements ProductService {
 
     private final String message ="The object you were looking for was not found.";
@@ -61,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
 
     public ProductDto getProductByCode(Integer code) throws NotFoundException {
         Optional<Product> productOptional = Optional.ofNullable(productRepository.findByCode(code));
-        if (productOptional == null) {
+        if (!productOptional.isPresent()) {
             throw new NotFoundException(message);
         }
         return productDtoConverter(productOptional.get());
@@ -69,17 +72,21 @@ public class ProductServiceImpl implements ProductService {
 
     public ProductDto getProductByName(String name) throws NotFoundException {
         Optional<Product> productOptional = Optional.ofNullable(productRepository.findByName(name));
-        if (productOptional == null) {
+        if (!productOptional.isPresent()) {
             throw new NotFoundException(message);
         }
         return productDtoConverter(productOptional.get());
     }
 
-    public void deleteProduct(Integer code) {
-        productRepository.deleteByCode(code);
+    public void deleteProduct(Integer code) throws NotFoundException {
+        Optional<Product> optionalProduct = Optional.ofNullable(productRepository.findByCode(code));
+        if (!optionalProduct.isPresent()) {
+            throw new NotFoundException(message);
+        }
+        productRepository.delete(optionalProduct.get());
     }
 
-    public ProductDto updateProduct(UpdateProductRequest updateProductRequest, int code) throws NotFoundException {
+    public ProductDto updateProduct(UpdateProductRequest updateProductRequest, Integer code) throws NotFoundException {
         Optional<Product> optionalProduct = Optional.ofNullable(productRepository.findByCode(code));
         if (!optionalProduct.isPresent()) {
             throw new NotFoundException(message);

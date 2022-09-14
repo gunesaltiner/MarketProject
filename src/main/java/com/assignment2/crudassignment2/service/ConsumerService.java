@@ -10,7 +10,7 @@ public interface ConsumerService {
 
     ConsumerDto updateConsumer(ConsumerRequest consumerRequest,String newEmail) throws Exception;
 
-    String deleteConsumerByEmail(String email);
+    void deleteConsumerByEmail(String email);
 
     String deleteConsumerById(Long id);
 

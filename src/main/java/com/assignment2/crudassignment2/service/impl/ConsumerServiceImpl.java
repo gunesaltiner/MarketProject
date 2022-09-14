@@ -1,13 +1,15 @@
 package com.assignment2.crudassignment2.service.impl;
 
 import com.assignment2.crudassignment2.exception.NotFoundException;
-import com.assignment2.crudassignment2.model.Consumer;
+import com.assignment2.crudassignment2.model.entity.Consumer;
 import com.assignment2.crudassignment2.model.dto.ConsumerDto;
 import com.assignment2.crudassignment2.model.request.ConsumerRequest;
 import com.assignment2.crudassignment2.repository.ConsumerRepository;
 import com.assignment2.crudassignment2.service.ConsumerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
 public class ConsumerServiceImpl implements ConsumerService {
 
     private final String message ="The object you were looking for was not found.";
@@ -50,9 +53,8 @@ public class ConsumerServiceImpl implements ConsumerService {
         return consumerDtoConverter(updatedConsumer);
     }
 
-    public String deleteConsumerByEmail(String email) {
+    public void deleteConsumerByEmail(String email) {
         consumerRepository.deleteByEmail(email);
-        return "This consumer has deleted!";
     }
 
     public String deleteConsumerById(Long id) {

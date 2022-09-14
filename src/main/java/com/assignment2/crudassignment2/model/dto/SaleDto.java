@@ -1,7 +1,7 @@
 package com.assignment2.crudassignment2.model.dto;
 
-import com.assignment2.crudassignment2.model.Consumer;
-import com.assignment2.crudassignment2.model.Product;
+import com.assignment2.crudassignment2.model.entity.Consumer;
+import com.assignment2.crudassignment2.model.entity.Product;
 import lombok.Data;
 
 import java.util.HashSet;

@@ -1,8 +1,9 @@
-package com.assignment2.crudassignment2.model;
+package com.assignment2.crudassignment2.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.boot.JaccPermissionDefinition;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -19,7 +20,7 @@ public class Sale {
     @GeneratedValue
     private Long id;
 
-    @OneToMany
+    @OneToMany()
     private Set<Product> products = new HashSet<>();
 
     @ManyToOne

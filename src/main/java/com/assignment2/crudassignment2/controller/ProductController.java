@@ -1,5 +1,6 @@
 package com.assignment2.crudassignment2.controller;
 
+import com.assignment2.crudassignment2.exception.NotFoundException;
 import com.assignment2.crudassignment2.model.dto.ProductDto;
 import com.assignment2.crudassignment2.model.request.AddProductRequest;
 import com.assignment2.crudassignment2.model.request.UpdateProductRequest;
@@ -26,14 +27,13 @@ public class ProductController {
         return new ResponseEntity<>(productService.saveProduct(addProductRequest), HttpStatus.CREATED);
     }
 
-
     // GET METHODS
     @GetMapping("/products")
     public ResponseEntity<List<ProductDto>> findProducts() {
         return new ResponseEntity<>(productService.getProducts(), HttpStatus.FOUND);
     }
 
-    @GetMapping("/product/{code}")
+    @GetMapping("/product/code/{code}")
     public ResponseEntity<ProductDto> findProductByCode(@PathVariable Integer code) throws Exception {
         return new ResponseEntity<>(productService.getProductByCode(code), HttpStatus.FOUND);
     }
@@ -45,13 +45,13 @@ public class ProductController {
 
     //PUT METHOD
     @PutMapping("/product/update/{code}")
-    public ResponseEntity<ProductDto> updateProduct(@RequestBody UpdateProductRequest updateProductRequest, @PathVariable int code) throws Exception {
+    public ResponseEntity<ProductDto> updateProduct(@RequestBody UpdateProductRequest updateProductRequest, @PathVariable Integer code) throws Exception {
         return new ResponseEntity<>(productService.updateProduct(updateProductRequest, code), HttpStatus.ACCEPTED);
     }
 
     // DELETE METHOD
     @DeleteMapping("/product/delete/{code}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Integer code) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Integer code) throws NotFoundException {
         productService.deleteProduct(code);
         return new ResponseEntity<>(HttpStatus.OK);
     }

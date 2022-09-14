@@ -1,6 +1,6 @@
 package com.assignment2.crudassignment2.model.dto;
 
-import com.assignment2.crudassignment2.model.Sale;
+import com.assignment2.crudassignment2.model.entity.Sale;
 import lombok.Data;
 
 
