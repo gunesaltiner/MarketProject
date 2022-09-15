@@ -1,16 +1,16 @@
 package com.assignment2.crudassignment2.service.impl;
 
 import com.assignment2.crudassignment2.exception.NotFoundException;
-import com.assignment2.crudassignment2.model.entity.Consumer;
+import com.assignment2.crudassignment2.model.entity.Customer;
 import com.assignment2.crudassignment2.model.entity.Product;
-import com.assignment2.crudassignment2.model.entity.Sale;
-import com.assignment2.crudassignment2.model.dto.SaleDto;
+import com.assignment2.crudassignment2.model.entity.Order;
+import com.assignment2.crudassignment2.model.dto.OrderDto;
 import com.assignment2.crudassignment2.model.request.AddSaleRequest;
 import com.assignment2.crudassignment2.model.request.UpdateSaleRequest;
-import com.assignment2.crudassignment2.repository.ConsumerRepository;
+import com.assignment2.crudassignment2.repository.CustomerRepository;
 import com.assignment2.crudassignment2.repository.ProductRepository;
-import com.assignment2.crudassignment2.repository.SaleRepository;
-import com.assignment2.crudassignment2.service.SaleService;
+import com.assignment2.crudassignment2.repository.OrderRepository;
+import com.assignment2.crudassignment2.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -24,53 +24,53 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class,propagation = Propagation.REQUIRED)
-public class SaleServiceImpl implements SaleService {
+public class OrderServiceImpl implements OrderService {
 
-    private final SaleRepository saleRepository;
+    private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final ConsumerRepository consumerRepository;
+    private final CustomerRepository customerRepository;
 
     private final String message ="The object you were looking for was not found.";
 
-    public SaleDto saveSale(AddSaleRequest addSaleRequest) throws Exception {
+    public OrderDto saveSale(AddSaleRequest addSaleRequest) throws Exception {
 
         Optional<List<Product>> productListOptional = Optional.ofNullable(productRepository.findByCodeIn(addSaleRequest.getProductCodeList()));
 //TODO check products
         if (!productListOptional.isPresent()) {
             throw new Exception(message);
         }
-        Optional<Consumer> consumerOptional = Optional.ofNullable(consumerRepository.findByEmail(addSaleRequest.getEmail()));
+        Optional<Customer> consumerOptional = Optional.ofNullable(customerRepository.findByEmail(addSaleRequest.getEmail()));
 
         if (!consumerOptional.isPresent()) {
             throw new Exception(message);
         }
 
         List<Product> productList = productListOptional.get();
-        Sale sale = new Sale();
+        Order order = new Order();
 
         double totalCost = 0;
         for (Product product : productList) {
-            sale.getProducts().add(product);
+            order.getProducts().add(product);
             totalCost = totalCost + product.getPrice();
         }
 
         Random random = new Random();
         int randomCode = random.nextInt(90000) + 10000;
 
-        while (saleRepository.findByCode(randomCode) != null) {
+        while (orderRepository.findByCode(randomCode) != null) {
             randomCode = random.nextInt(90000) + 10000;
         }
 
-        sale.setCode(randomCode);
-        sale.setTotalCost(totalCost);
-        sale.setConsumer(consumerOptional.get());
-        saleRepository.save(sale);
+        order.setCode(randomCode);
+        order.setTotalCost(totalCost);
+        order.setCustomer(consumerOptional.get());
+        orderRepository.save(order);
 
-        return saleDtoConverter(sale);
+        return saleDtoConverter(order);
     }
 
-    public SaleDto updateSale(UpdateSaleRequest updateSaleRequest, Integer saleCode) throws Exception {
-        Optional<Sale> sale = Optional.ofNullable(saleRepository.findByCode(saleCode));
+    public OrderDto updateSale(UpdateSaleRequest updateSaleRequest, Integer saleCode) throws Exception {
+        Optional<Order> sale = Optional.ofNullable(orderRepository.findByCode(saleCode));
         if (!sale.isPresent()) {
             throw new Exception(message);
         }
@@ -92,60 +92,60 @@ public class SaleServiceImpl implements SaleService {
         sale.get().setTotalCost(totalCost);
         sale.get().getProducts().remove(oldProduct.get());
         sale.get().getProducts().add(newProduct.get());
-        saleRepository.save(sale.get());
+        orderRepository.save(sale.get());
 
         return saleDtoConverter(sale.get());
     }
 
     public void deleteSale(Integer code) throws NotFoundException {
-        Optional<Sale> sale = Optional.ofNullable(saleRepository.findByCode(code));
+        Optional<Order> sale = Optional.ofNullable(orderRepository.findByCode(code));
         if (!sale.isPresent()) {
             throw new NotFoundException(message);
         }
-        saleRepository.deleteById(sale.get().getId());
+        orderRepository.deleteById(sale.get().getId());
     }
 
-    public SaleDto getSaleByCode(Integer code) throws NotFoundException {
-        Optional<Sale> sale = Optional.ofNullable(saleRepository.findByCode(code));
+    public OrderDto getSaleByCode(Integer code) throws NotFoundException {
+        Optional<Order> sale = Optional.ofNullable(orderRepository.findByCode(code));
         if (!sale.isPresent()) {
             throw new NotFoundException(message);
         }
         return saleDtoConverter(sale.get());
     }
 
-    public List<SaleDto> getSalesByConsumerEmail(String consumerEmail) throws NotFoundException {
-        Optional<Consumer> consumer = Optional.ofNullable(consumerRepository.findByEmail(consumerEmail));
+    public List<OrderDto> getSalesByConsumerEmail(String consumerEmail) throws NotFoundException {
+        Optional<Customer> consumer = Optional.ofNullable(customerRepository.findByEmail(consumerEmail));
         if (!consumer.isPresent()) {
             throw new NotFoundException(message);
         }
 
-        List<Sale> sales = saleRepository.findByConsumerId((consumer.get().getId()));
+        List<Order> orders = orderRepository.findByConsumerId((consumer.get().getId()));
 
-        List<SaleDto> resultList = new ArrayList<>();
-        for (Sale sale : sales) {
-            SaleDto saleDto = saleDtoConverter(sale);
-            resultList.add(saleDto);
+        List<OrderDto> resultList = new ArrayList<>();
+        for (Order order : orders) {
+            OrderDto orderDto = saleDtoConverter(order);
+            resultList.add(orderDto);
         }
         return resultList;
     }
 
-    public List<SaleDto> getSales() {
-        List<Sale> sales = saleRepository.findAll();
-        List<SaleDto> resultList = new ArrayList<>();
-        for (Sale sale : sales) {
-            SaleDto saleDto = saleDtoConverter(sale);
-            resultList.add(saleDto);
+    public List<OrderDto> getSales() {
+        List<Order> orders = orderRepository.findAll();
+        List<OrderDto> resultList = new ArrayList<>();
+        for (Order order : orders) {
+            OrderDto orderDto = saleDtoConverter(order);
+            resultList.add(orderDto);
         }
         return resultList;
     }
 
-    public SaleDto saleDtoConverter(Sale sale) {
-        SaleDto saleDto = new SaleDto();
-        saleDto.setTotalCost(sale.getTotalCost());
-        saleDto.setCode(sale.getCode());
-        saleDto.setConsumer(sale.getConsumer());
-        saleDto.setProducts(sale.getProducts());
+    public OrderDto saleDtoConverter(Order order) {
+        OrderDto orderDto = new OrderDto();
+        orderDto.setTotalCost(order.getTotalCost());
+        orderDto.setCode(order.getCode());
+        orderDto.setCustomer(order.getCustomer());
+        orderDto.setProducts(order.getProducts());
 
-        return saleDto;
+        return orderDto;
     }
 }

@@ -1,16 +1,17 @@
 package com.assignment2.crudassignment2.model.dto;
 
-import com.assignment2.crudassignment2.model.entity.Sale;
+import com.assignment2.crudassignment2.model.entity.Order;
 import lombok.Data;
 
 
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class ConsumerDto {
+public class CustomerDto {
 
     @Email
     private String email;
@@ -18,5 +19,6 @@ public class ConsumerDto {
     @NotEmpty
     private String name;
 
-    private Set<Sale> purchased = new HashSet<>();
+    @OneToMany(mappedBy = "consumer")
+    private Set<Order> purchased = new HashSet<>();
 }

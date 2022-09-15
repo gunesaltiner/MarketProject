@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "consumer")
-public class Consumer {
+public class Customer {
 
     @Id
     @GeneratedValue
@@ -26,6 +26,7 @@ public class Consumer {
 
     private String name;
 
-    @OneToMany(mappedBy = "consumer")
-    private Set<Sale> purchased = new HashSet<>();
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Order> purchased = new HashSet<>();
 }

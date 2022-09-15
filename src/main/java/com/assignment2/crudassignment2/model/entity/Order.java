@@ -3,7 +3,6 @@ package com.assignment2.crudassignment2.model.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.boot.JaccPermissionDefinition;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -14,17 +13,19 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "sale")
-public class Sale {
+public class Order {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @OneToMany()
+    @OneToMany
+    @JoinColumn(name = "fk_order")
     private Set<Product> products = new HashSet<>();
 
+
     @ManyToOne
-    private Consumer consumer;
+    private Customer customer;
 
     private double totalCost;
 
